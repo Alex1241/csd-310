@@ -1,0 +1,2 @@
+use pysports;
+show tables;

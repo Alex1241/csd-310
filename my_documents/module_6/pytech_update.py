@@ -10,7 +10,6 @@ doc = db.students.find_one({"student_id": "1007"})
 doc2 = db.students.find_one({"student_id": "1008"})
 doc3 = db.students.find_one({"student_id": "1009"})
 
-
 #Print section before alterations
 print("-- DISPLAYING STUDENTS DOCUMENTS FROM find() QUERY --")
 print("Student ID: " + doc["student_id"])
