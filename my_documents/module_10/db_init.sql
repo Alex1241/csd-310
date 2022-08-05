@@ -1,19 +1,34 @@
+
+
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS wishlist;
+DROP TABLE IF EXISTS book;
+DROP TABLE IF EXISTS store;
+
+ALTER TABLE wishlist DROP FOREIGN KEY fk_user;
+ALTER TABLE wishlist DROP FOREIGN KEY fk_book;
+
+
 CREATE TABLE users (
-	user_id	INT, NOT NULL, AUTO_INCREMENT,
+	user_id	INT NOT NULL AUTO_INCREMENT,
     first_name	VARCHAR(75)	NOT NULL,
     last_name	VARCHAR(75)	NOT NULL,
     PRIMARY KEY(user_id)
     );
 CREATE TABLE wishlist (
-wishlist_id INT, NOT NULL, AUTO_INCREMENT,
-user_id INT, NOT NULL, AUTO_INCREMENT,
-book_id INT, NOT NULL, AUTO_INCREMENT,
-PRIMARY KEY(wishlist_id)
+wishlist_id INT NOT NULL AUTO_INCREMENT,
+user_id INT NOT NULL AUTO_INCREMENT,
+book_id INT NOT NULL AUTO_INCREMENT,
+PRIMARY KEY(wishlist_id),
+CONSTRAINT fk_user
 FOREIGN KEY(user_id)
+	REFERENCES user(user_id),
+CONSTRAINT fk_book
 FOREIGN KEY(book_id)
+	REFERENCES book(book_id)
 );
 CREATE TABLE book (
-book_id	INT, NOT NULL, AUTO_INCREMENT,
+book_id	INT NOT NULL AUTO_INCREMENT,
 book_name VARCHAR(200)	NOT NULL,
 details VARCHAR(500),
 author VARCHAR(200)	NOT NULL,
