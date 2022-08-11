@@ -37,21 +37,21 @@ def bookadd(cursor, myID):
     print(query)
     cursor.execute(query)
     canadd = cursor.fetchall()
-    print("Displaying Available Books")
+    print("Displaying Available Books:")
     for book in canadd:
-        cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(myID, book_id))
+        print(" Book ID: {}\n Book Name: {}\n".format(book[0], book[1]))
     print("Book added to database.")
 
 def showBook(cursor):
     cursor.execute("SELECT book_id, book_name, author, details FROM book")
     books = cursor.fetchall()
-    print("Showing Books")
+    print("Showing Books...")
     for book in books:
         print("Book Name: {}\n Author: {}\n Details: {}\n".format(book[1],book[2], book[3]))
     
 def checkuser():
     try:
-        user_id = int(input("Enter a customer id"))
+        user_id = int(input("Enter a customer id: "))
         if user_id < 0 or user_id > 3:
             print("Invalid customer number detected. Shutting down.")
             quit()
@@ -64,7 +64,7 @@ def checkuser():
 
 def accmenu():
     try:
-        print("Displaying customer menu")
+        print("Displaying Customer Menu")
         print(" 1 - Wishlist \n 2 - Add a Book \n 3 - Main Menu")
         accountchoice = int(input())
         if accountchoice < 0 or accountchoice > 3:
@@ -103,16 +103,16 @@ try:
     while selection != 4:
         if selection == 1:
             showBook(cursor)
-        if selection == 2:
+        elif selection == 2:
             showLoc(cursor)
-        if selection == 3:
+        elif selection == 3:
             myID = checkuser()
             accopt = accmenu()
 
             while accopt != 3:
                 if accopt == 1:
                     showwishlist(cursor, myID)
-                if accopt == 2:
+                elif accopt == 2:
                     bookadd(cursor, myID)
                     book_id = int(input("Enter the target book's id to add"))
                     addwishlist(cursor, myID, book_id)
