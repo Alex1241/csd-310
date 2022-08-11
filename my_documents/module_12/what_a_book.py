@@ -64,7 +64,7 @@ def checkuser():
 
 def accmenu():
     try:
-        print("Displaying Customer Menu")
+        print("Displaying Customer Account Menu")
         print(" 1 - Wishlist \n 2 - Add a Book \n 3 - Main Menu")
         accountchoice = int(input())
         if accountchoice < 0 or accountchoice > 3:
@@ -114,7 +114,7 @@ try:
                     showwishlist(cursor, myID)
                 elif accopt == 2:
                     bookadd(cursor, myID)
-                    book_id = int(input("Enter the target book's id to add"))
+                    book_id = int(input("Enter the target book's id to add: "))
                     addwishlist(cursor, myID, book_id)
                     db.commit()
                     print("Book ID: {} was added to your wishlist!".format(book_id))
