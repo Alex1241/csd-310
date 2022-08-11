@@ -5,28 +5,22 @@ import mysql.connector
 from mysql.connector import errorcode
 
 config = {
-    "user":"pysports_user",
-    "password":"MYSQL8IsGreat!",
-    "host":"127.0.0.1",
-    "database":"whatabook",
+    "user": "whatabook_user",
+    "password": "MySQL8IsGreat!",
+    "host": "127.0.0.1",
+    "database": "whatabook",
     "raise_on_warnings": True
 }
 
 def menu():
-    print("Press 1 to view books \n Press 2 to view store locations \n Press 3 to view your account \n Press 4 to exit the program")
+    print("1 - View Books \n 2 - View Store Locations \n 3 - View Your Account \n 4 Exit the Program")
     try:
         choice = int(input())
-#work on this later
-        if choice < 0 or choice > 3:
-            print("Invalid input detected. Shutting down.")
+        if choice < 0 or choice > 4:
+            print("Invalid number option was made. Shutting down.")
             quit()
-        elif choice == 1:
-            print("")
-        elif choice == 2:
-            print("")
-        elif choice == 3:
-            print("")
-
+        else:
+            return choice
 
     except ValueError:
         print("Input invalid. Terminating Program")
@@ -51,10 +45,10 @@ def bookadd(cursor, user_id, book_id):
         cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(user_id, book_id))
 
 def showBook(cursor):
-    cursor.execute("SELECT bok_id, book_name, author, details FROM book")
+    cursor.execute("SELECT book_id, book_name, author, details FROM book")
     books = cursor.fetchall()
-    for book in book:
-        print("Book Name: {}\n Author: {}\n Details: {}\n".format(book[0],book[1], book[2]))
+    for book in books:
+        print("Book Name: {}\n Author: {}\n Details: {}\n".format(book[1],book[2], book[3]))
     
 def checkuser():
     try:
@@ -62,13 +56,8 @@ def checkuser():
         if user_id < 0 or user_id > 3:
             print("Invalid customer number detected. Shutting down.")
             quit()
-#work on this
-        elif user_id == 1:
-            print("")
-        elif user_id == 2:
-            print("")
-        elif user_id == 3:
-            print("")
+        else:
+            return user_id
 
     except ValueError:
         print("Invalid input detected. Shutting down.")
@@ -79,30 +68,25 @@ def accmenu():
         print("Displaying customer menu")
         print("1 - Wishlist \n 2 - Add a Book \n 3 - Main Menu")
         accountchoice = int(input())
-#work on this later
         if accountchoice < 0 or accountchoice > 3:
             print("Invalid input detected. Shutting down.")
             quit()
-        elif accountchoice == 1:
-            print("")
-        elif accountchoice == 2:
-            print("")
-        elif accountchoice == 3:
-            print("")
+        else:
+            return accountchoice
     
     except ValueError:
         print("Invalid input detected. Shutting down.")
         quit()
 
-def addwishlist(cursor, user_id, book_id):
+def addwishlist(cursor, _user_id, _book_id):
     cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(user_id, book_id))
 
-def showwishlist(cursor, user_id):
+def showwishlist(cursor, _user_id):
     cursor.execute("SELECT user.user_id, user.first_name, user.last_name, book.book_id, book.book_name, book.author" +
     "FROM wishlist" +
     "INNER JOIN user ON wishlist.user_id = user.user_id" +
     "INNER JOIN book ON wishlist.book_id = book.book_id" +
-    "WHERE user.user_id = {}".format(user_id))
+    "WHERE user.user_id = {}".format(_user_id))
 
     wishlist = cursor.fetchall()
     print("Showing Wishlist")
@@ -112,17 +96,38 @@ def showwishlist(cursor, user_id):
 
 # Imported from previous work. Please revise later. This is the primary code that will put everything together. 
 # Right now it does nothing since it was meant for connecting to pysports.
-# 1 = showbook() 2 = showLoc() 3 = accmenu() 4 = quit()
+# 1 = showbook() 2 = showLoc() 3 = accmenu() 4 = quit() \\ Returned variables: choice, user_id, accountchoice
 try:
     db = mysql.connector.connect(**config)
     print("\n  Database user {} connected to MySQL on host {} with database {}".format(config["user"], config["host"], config["database"]))
     cursor = db.cursor()
-    cursor.execute("SELECT player_id, first_name, last_name, team_name FROM player INNER JOIN team ON player.team_id = team.team_id")
-    players = cursor.fetchall()
-    print("--DISPLAYING PLAYER RECORDS--")
-    for player in players:
-        print("Player ID: {}\n First Name: {}\n Last Name: {}\n Team Name: {}\n".format(player[0], player[1], player[2], player[3]))
-    input("\n\n  Press any key to continue...")
+    print("WhatABook Application activated!")\
+    
+    selection = menu()
+    while selection != 4:
+        if selection == 1:
+            showBook(cursor)
+        if selection == 2:
+            showLoc(cursor)
+        if selection == 3:
+            myID = checkuser()
+            accopt = accmenu()
+
+            while accopt != 3:
+                if accopt == 1:
+                    showwishlist(cursor, myID)
+                if accopt == 2:
+                    bookadd(cursor, myID)
+                    book_id = int(input("Enter the target book's id to add"))
+                    bookadd(cursor, myID, book_id)
+                    db.commit()
+                    print("Book ID: {} was added to your wishlist!".format(book_id))
+
+                accopt = accmenu()
+        if selection < 0 or selection > 4:
+            print("invalid option found. Please try again.")
+        selection = menu()
+    print("Program terminated")
 
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
