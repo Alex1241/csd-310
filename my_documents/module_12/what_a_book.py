@@ -13,7 +13,7 @@ config = {
 }
 
 def menu():
-    print("1 - View Books \n 2 - View Store Locations \n 3 - View Your Account \n 4 Exit the Program")
+    print(" 1 - View Books \n 2 - View Store Locations \n 3 - View Your Account \n 4 Exit the Program")
     try:
         choice = int(input())
         if choice < 0 or choice > 4:
@@ -33,7 +33,7 @@ def showLoc(cursor):
     for location in locations:
         print("Location(s):{}\n".format(location[1]))
 
-def bookadd(cursor, user_id, book_id):
+def bookadd(cursor, user_id):
     query = ("SELECT book_id, book_name, author, details"
             "FROM book"
             "WHERE book_id NOT IN (SELECT book_id FROM wishlist WHERE user_id = {}".format(user_id))
@@ -43,10 +43,12 @@ def bookadd(cursor, user_id, book_id):
     print("Displaying Available Books")
     for book in canadd:
         cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(user_id, book_id))
+    print("Book added to database.")
 
 def showBook(cursor):
     cursor.execute("SELECT book_id, book_name, author, details FROM book")
     books = cursor.fetchall()
+    print("Showing Books")
     for book in books:
         print("Book Name: {}\n Author: {}\n Details: {}\n".format(book[1],book[2], book[3]))
     
@@ -66,7 +68,7 @@ def checkuser():
 def accmenu():
     try:
         print("Displaying customer menu")
-        print("1 - Wishlist \n 2 - Add a Book \n 3 - Main Menu")
+        print(" 1 - Wishlist \n 2 - Add a Book \n 3 - Main Menu")
         accountchoice = int(input())
         if accountchoice < 0 or accountchoice > 3:
             print("Invalid input detected. Shutting down.")
@@ -79,13 +81,13 @@ def accmenu():
         quit()
 
 def addwishlist(cursor, _user_id, _book_id):
-    cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(user_id, book_id))
+    cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(_user_id, book_id))
 
 def showwishlist(cursor, _user_id):
-    cursor.execute("SELECT user.user_id, user.first_name, user.last_name, book.book_id, book.book_name, book.author" +
-    "FROM wishlist" +
-    "INNER JOIN user ON wishlist.user_id = user.user_id" +
-    "INNER JOIN book ON wishlist.book_id = book.book_id" +
+    cursor.execute("SELECT user.user_id, user.first_name, user.last_name, book.book_id, book.book_name, book.author " +
+    "FROM wishlist " +
+    "INNER JOIN user ON wishlist.user_id = user.user_id " +
+    "INNER JOIN book ON wishlist.book_id = book.book_id " +
     "WHERE user.user_id = {}".format(_user_id))
 
     wishlist = cursor.fetchall()
@@ -93,9 +95,6 @@ def showwishlist(cursor, _user_id):
     for book in wishlist:
         print("Book Name: {}\n Author: {}\n".format(book[4],book[5]))
 
-
-# Imported from previous work. Please revise later. This is the primary code that will put everything together. 
-# Right now it does nothing since it was meant for connecting to pysports.
 # 1 = showbook() 2 = showLoc() 3 = accmenu() 4 = quit() \\ Returned variables: choice, user_id, accountchoice
 try:
     db = mysql.connector.connect(**config)
@@ -119,7 +118,7 @@ try:
                 if accopt == 2:
                     bookadd(cursor, myID)
                     book_id = int(input("Enter the target book's id to add"))
-                    bookadd(cursor, myID, book_id)
+                    addwishlist(cursor, myID, book_id)
                     db.commit()
                     print("Book ID: {} was added to your wishlist!".format(book_id))
 
