@@ -1,6 +1,3 @@
-#To the peer reviewers. This is not done yet. I am still working on it. 
-# In its current state, it is not functional. This is will be gone, once I actually finish it and do some testing.
-
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -33,16 +30,16 @@ def showLoc(cursor):
     for location in locations:
         print("Location(s):{}\n".format(location[1]))
 
-def bookadd(cursor, user_id):
-    query = ("SELECT book_id, book_name, author, details"
-            "FROM book"
-            "WHERE book_id NOT IN (SELECT book_id FROM wishlist WHERE user_id = {}".format(user_id))
+def bookadd(cursor, myID):
+    query = ("SELECT book_id, book_name, author, details "
+            "FROM book "
+            "WHERE book_id NOT IN (SELECT book_id FROM wishlist WHERE user_id = {})".format(myID))
     print(query)
     cursor.execute(query)
     canadd = cursor.fetchall()
     print("Displaying Available Books")
     for book in canadd:
-        cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(user_id, book_id))
+        cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(myID, book_id))
     print("Book added to database.")
 
 def showBook(cursor):
@@ -80,7 +77,7 @@ def accmenu():
         print("Invalid input detected. Shutting down.")
         quit()
 
-def addwishlist(cursor, _user_id, _book_id):
+def addwishlist(cursor, _user_id, book_id):
     cursor.execute("INSERT INTO wishlist(user_id, book_id) VALUES({},{})".format(_user_id, book_id))
 
 def showwishlist(cursor, _user_id):
